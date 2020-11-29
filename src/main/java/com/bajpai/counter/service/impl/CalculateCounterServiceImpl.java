@@ -53,15 +53,19 @@ public class CalculateCounterServiceImpl implements CalculateCounterService {
 		
 		GetCounterResponse response = new GetCounterResponse();
 		counts = new ArrayList<Integer>();
-		if(counters.get(uuid) != null) {
+		if(counters.get(uuid) != null ) {
 			
-			System.out.println("Value:"+counters.get(uuid));
-			
-			for(int i = counters.get(uuid).getGoal() ; i >= 0;
-					i = i - counters.get(uuid).getStep()) {
-				counts.add(i);	
+			if( timeOperations.isCounterReady(counters.get(uuid).getTimeStamp(), 10)) {
+				for(int i = counters.get(uuid).getGoal() ; i >= 0;
+						i = i - counters.get(uuid).getStep()) {
+					counts.add(i);	
+				}
+			} else {
+				response.setResult(StatusResponseEnum.IN_PROGRESS.toString());
 			}
-		}
+			
+			
+		} 
 		
 		String countsAsString = counts.toString()
 									  .replace("[", "")
@@ -80,12 +84,12 @@ public class CalculateCounterServiceImpl implements CalculateCounterService {
 			isReady = timeOperations.isCounterReady(counters.get(uuid).getTimeStamp(), 10);
 			
 			if(isReady) {
-				response.setResponse(StatusResponseEnum.SUCCESS.toString());
+				response.setResult(StatusResponseEnum.SUCCESS.toString());
 			} else {
-				response.setResponse(StatusResponseEnum.IN_PROGRESS.toString());
+				response.setResult(StatusResponseEnum.IN_PROGRESS.toString());
 			}
 		} else {
-			 response.setResponse(StatusResponseEnum.ERROR.toString());
+			 response.setResult(StatusResponseEnum.ERROR.toString());
 			 return response;
 		}
 		
